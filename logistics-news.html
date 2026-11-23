@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>URA &amp; Logistics News | Laiken Logistics</title>
+  <meta name="description" content="Live URA, customs, port and transport news for Ugandan importers and exporters, collected automatically by Laiken Logistics." />
+  <meta name="theme-color" content="#021a2c" />
+  <link rel="icon" href="images/laiken_logistics_logo.png" />
+  <link rel="stylesheet" href="css/bootstrap.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/font-awesome.min.css" />
+  <link rel="stylesheet" href="css/logistics.css" />
+  <style>
+    .nh-layout { display: grid; grid-template-columns: 1fr 340px; gap: 32px; align-items: start; }
+    .nh-toolbar { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .nh-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nh-tab {
+      border: 1px solid var(--lk-line-2); background: #fff; color: var(--lk-ink-2); border-radius: 8px; padding: 8px 14px; font: 600 14px var(--lk-font);
+      cursor: pointer; display: inline-flex; gap: 7px; align-items: center; transition: .15s;
+    }
+    .nh-tab:hover { border-color: var(--lk-teal); color: var(--lk-teal-600); }
+    .nh-tab.is-active { background: var(--lk-navy); border-color: var(--lk-navy); color: #fff; }
+    .nh-tab .n { font-size: 11.5px; background: rgba(0,0,0,.08); border-radius: 999px; padding: 1px 7px; }
+    .nh-tab.is-active .n { background: rgba(255,255,255,.18); }
+    .nh-search { position: relative; flex: 0 1 280px; }
+    .nh-search input { width: 100%; border: 1.5px solid var(--lk-line-2); border-radius: 999px; padding: 10px 16px 10px 40px; font: 15px var(--lk-font); }
+    .nh-search input:focus { outline: none; border-color: var(--lk-teal); box-shadow: 0 0 0 4px rgba(10,151,176,.15); }
+    .nh-search .fa { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--lk-muted); }
+    .nh-featured { display: grid; grid-template-columns: 1.2fr 1fr; background: #fff; border: 1px solid var(--lk-line); border-radius: 22px; overflow: hidden; margin-bottom: 24px; text-decoration: none !important; color: var(--lk-ink) !important; transition: box-shadow .2s; }
+    .nh-featured:hover { box-shadow: var(--lk-shadow-lg); }
+    .nh-featured .thumb { min-height: 280px; background-color: var(--lk-navy-700); position: relative; }
+    .nh-featured .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .nh-featured .body { padding: 28px; display: flex; flex-direction: column; gap: 12px; }
+    .nh-featured h2 { font-size: 26px; margin: 0; }
+    .nh-featured p { color: var(--lk-muted); margin: 0; }
+    .nh-side { display: grid; gap: 20px; position: sticky; top: calc(var(--lk-header-h) + 20px); }
+    .nh-box { background: #fff; border: 1px solid var(--lk-line); border-radius: 20px; padding: 22px; }
+    .nh-box h3 { font-size: 17px; margin-bottom: 14px; display: flex; gap: 10px; align-items: center; }
+    .nh-box h3 .fa { color: var(--lk-teal); }
+    .nh-deadline { background: linear-gradient(135deg, var(--lk-navy-900), var(--lk-navy-700)); color: #fff; border: 0; }
+    .nh-deadline h3 { color: #fff; }
+    .nh-deadline .big { font: 700 44px/1 var(--lk-display); color: var(--lk-amber); }
+    .nh-deadline p { color: #b8cbd8; font-size: 14px; margin: 6px 0 0; }
+    .nh-status { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: #b8cbd8; margin-top: 18px; }
+    .nh-status .lk-dot { width: 8px; height: 8px; border-radius: 50%; background: #3ee59a; }
+    .nh-more { text-align: center; margin-top: 28px; }
+    @media (max-width: 991px) {
+      .nh-layout { grid-template-columns: 1fr; }
+      .nh-side { position: static; }
+      .nh-featured { grid-template-columns: 1fr; }
+      .nh-featured .thumb { min-height: 200px; }
+    }
+    @media (max-width: 575px) { .nh-search { flex: 1 1 100%; } .nh-featured h2 { font-size: 21px; } }
+  </style>
+</head>
+
+<body class="lk-body">
+  <div class="lk-demo-banner"><i class="fa fa-flask"></i> Preview mode: the live news feed appears once the backend is connected in <code>js/logistics-config.js</code>.</div>
+
+  <header class="lk-header">
+    <div class="lk-container">
+      <a class="lk-brand" href="logistics.html">
+        <img src="images/laiken_logistics_logo.png" alt="Laiken Logistics logo" />
+        <span><b>Laiken Logistics</b><small>Port to doorstep</small></span>
+      </a>
+      <button class="lk-menu-toggle" aria-label="Open menu" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      <nav class="lk-nav" aria-label="Main">
+        <a href="logistics.html">Home</a>
+        <a href="logistics.html#services">Services</a>
+        <a href="logistics.html#track">Track</a>
+        <a href="logistics-news.html" class="is-active" aria-current="page">News</a>
+        <a href="logistics-tracker.html"><i class="fa fa-lock"></i> Staff</a>
+        <a class="lk-btn lk-btn-primary lk-btn-sm" href="logistics.html#quote">Get a quote</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="lk-page-hero">
+    <div class="lk-container">
+      <span class="lk-eyebrow">Updated automatically</span>
+      <h1>URA &amp; logistics news</h1>
+      <p>Customs, tax, port, corridor and trade news that affects importers and exporters in Uganda, all in one place.</p>
+      <div class="nh-status"><span class="lk-dot"></span><span id="refreshed">Checking for the latest stories…</span></div>
+    </div>
+  </section>
+
+  <section class="lk-section" style="padding-top:40px">
+    <div class="lk-container nh-layout">
+      <main>
+        <div class="nh-toolbar">
+          <div class="nh-tabs" id="tabs" role="tablist" aria-label="News categories"></div>
+          <label class="nh-search"><span class="lk-sr">Search news</span><i class="fa fa-search"></i><input id="search" type="search" placeholder="Search e.g. EFRIS, Malaba, duty" /></label>
+        </div>
+        <div id="featured"></div>
+        <div class="lk-grid lk-grid-2" id="grid">
+          <div class="lk-skel" style="height:320px"></div><div class="lk-skel" style="height:320px"></div>
+          <div class="lk-skel" style="height:320px"></div><div class="lk-skel" style="height:320px"></div>
+        </div>
+        <div class="nh-more"><button class="lk-btn lk-btn-light" id="more" hidden>Show more stories</button></div>
+      </main>
+
+      <aside class="nh-side">
+        <div class="nh-box nh-deadline">
+          <h3><i class="fa fa-calendar-check-o"></i> Next URA monthly deadline</h3>
+          <div class="big" id="deadlineDays">–</div>
+          <p id="deadlineText">Monthly VAT and PAYE returns are due by the 15th of each month.</p>
+          <p style="font-size:12px;opacity:.75;margin-top:10px">A guide only. Always confirm current deadlines on ura.go.ug.</p>
+        </div>
+
+        <div class="nh-box">
+          <h3><i class="fa fa-external-link-square"></i> Official links</h3>
+          <div class="lk-links">
+            <a class="lk-link" href="https://ura.go.ug" target="_blank" rel="noopener"><span class="ic"><i class="fa fa-university"></i></span><span><b>URA</b><small>Notices, tax portal &amp; customs</small></span><i class="fa fa-external-link"></i></a>
+            <a class="lk-link" href="https://efris.ura.go.ug" target="_blank" rel="noopener"><span class="ic"><i class="fa fa-file-text-o"></i></span><span><b>EFRIS</b><small>e-invoicing &amp; receipting</small></span><i class="fa fa-external-link"></i></a>
+            <a class="lk-link" href="https://www.unbs.go.ug" target="_blank" rel="noopener"><span class="ic"><i class="fa fa-certificate"></i></span><span><b>UNBS</b><small>Standards &amp; PVoC</small></span><i class="fa fa-external-link"></i></a>
+            <a class="lk-link" href="https://www.kpa.co.ke" target="_blank" rel="noopener"><span class="ic"><i class="fa fa-anchor"></i></span><span><b>Kenya Ports Authority</b><small>Mombasa port</small></span><i class="fa fa-external-link"></i></a>
+            <a class="lk-link" href="https://www.ports.go.tz" target="_blank" rel="noopener"><span class="ic"><i class="fa fa-anchor"></i></span><span><b>Tanzania Ports Authority</b><small>Dar es Salaam port</small></span><i class="fa fa-external-link"></i></a>
+            <a class="lk-link" href="https://www.kra.go.ke" target="_blank" rel="noopener"><span class="ic"><i class="fa fa-flag"></i></span><span><b>KRA</b><small>Kenya transit &amp; customs</small></span><i class="fa fa-external-link"></i></a>
+            <a class="lk-link" href="https://www.eac.int" target="_blank" rel="noopener"><span class="ic"><i class="fa fa-globe"></i></span><span><b>EAC</b><small>Customs union &amp; CET</small></span><i class="fa fa-external-link"></i></a>
+          </div>
+        </div>
+
+        <div class="nh-box" style="text-align:center">
+          <h3 style="justify-content:center"><i class="fa fa-question-circle"></i> Confused by a URA change?</h3>
+          <p style="color:var(--lk-muted);font-size:14px">Our clearing agents can explain how it affects your cargo.</p>
+          <a class="lk-btn lk-btn-wa lk-btn-block" data-wa="Hello Laiken, I have a question about a URA / customs update." href="https://wa.me/256755408999"><i class="fa fa-whatsapp"></i> Ask an agent</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <footer class="lk-footer" style="padding-top:0">
+    <div class="lk-container">
+      <div class="lk-footer-bottom" style="margin-top:0">
+        <span>&copy; <span data-year></span> Laiken Logistics. Headlines link to their original publishers.</span>
+        <span><a href="logistics.html">Home</a> · <a href="logistics.html#quote">Get a quote</a> · <a href="logistics-tracker.html">Staff</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/logistics-config.js"></script>
+  <script src="js/logistics-common.js"></script>
+  <script src="js/logistics-news.js"></script>
+</body>
+
+</html>

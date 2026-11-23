@@ -1,0 +1,13 @@
+{
+  "name": "Laiken Logistics Tracker",
+  "short_name": "Laiken Tracker",
+  "description": "Laiken Logistics staff shipment dashboard",
+  "start_url": "logistics-tracker.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#021a2c",
+  "theme_color": "#021a2c",
+  "icons": [
+    { "src": "images/laiken_logistics_logo.png", "sizes": "154x196", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shipment Dashboard | Laiken Logistics</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#021a2c" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="images/laiken_logistics_logo.png" />
+  <link rel="apple-touch-icon" href="images/laiken_logistics_logo.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Laiken Tracker" />
+  <link rel="stylesheet" href="css/bootstrap.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <link rel="stylesheet" href="css/logistics.css" />
+  <style>
+    body.lk-body { background: #eef3f7; }
+    [hidden] { display: none !important; }
+
+    /* ---------- login ---------- */
+    .tk-login {
+      min-height: calc(100vh - var(--lk-header-h)); display: grid; place-items: center; padding: 32px 16px;
+      background: linear-gradient(90deg, rgba(2, 26, 44, .95), rgba(2, 26, 44, .85)), url("images/slider-bg.jpg") center / cover no-repeat;
+    }
+    .tk-login-card { background: #fff; border-radius: 12px; width: 100%; max-width: 420px; padding: 32px; box-shadow: var(--lk-shadow-lg); }
+    .tk-login-card .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+    .tk-login-card .logo img { width: 48px; height: 48px; }
+    .tk-login-card h1 { font-size: 22px; margin: 0; }
+    .tk-login-card .sub { color: var(--lk-muted); font-size: 14px; margin: 0 0 20px; }
+    .tk-switch { background: none; border: 0; color: var(--lk-teal-600); font-weight: 600; font-size: 14px; padding: 0; cursor: pointer; }
+    .tk-otp { letter-spacing: 8px; font-size: 22px !important; text-align: center; font-weight: 700 !important; }
+
+    /* ---------- app shell ---------- */
+    .tk-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .tk-icon-btn {
+      width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--lk-line-2); background: #fff; color: var(--lk-navy);
+      display: grid; place-items: center; cursor: pointer; text-decoration: none !important; transition: .15s; font-size: 16px;
+    }
+    .tk-icon-btn:hover { border-color: var(--lk-navy); }
+    .tk-icon-btn.spin .fa { animation: lk-spin .8s linear infinite; }
+    .tk-user { display: flex; align-items: center; gap: 10px; padding: 0 4px 0 8px; }
+    .tk-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--lk-teal); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+    .tk-user small { display: block; color: var(--lk-muted); font-size: 12px; line-height: 1.1; }
+    .tk-user b { font-size: 14px; line-height: 1.2; }
+    @media (max-width: 767px) { .tk-user span { display: none; } }
+    @media (max-width: 575px) { .tk-hide-xs { display: none !important; } }
+
+    .tk-main { max-width: 1440px; margin: 0 auto; padding: 24px 20px 60px; }
+    .tk-hello { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+    .tk-hello h1 { font-size: 26px; margin: 0; }
+    .tk-hello p { color: var(--lk-muted); margin: 2px 0 0; }
+
+    .tk-kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 20px; }
+    .tk-kpi {
+      background: #fff; border: 1px solid var(--lk-line); border-radius: 18px; padding: 16px 18px; cursor: pointer; text-align: left; position: relative; overflow: hidden;
+      transition: transform .15s, box-shadow .15s, border-color .15s; font-family: var(--lk-font);
+    }
+    .tk-kpi:hover { transform: translateY(-2px); box-shadow: var(--lk-shadow); }
+    .tk-kpi.is-active { border-color: var(--lk-teal); box-shadow: 0 0 0 3px rgba(10,151,176,.15); }
+    .tk-kpi .ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 16px; margin-bottom: 10px; }
+    .tk-kpi b { display: block; font: 700 28px/1 var(--lk-display); color: var(--lk-navy); }
+    .tk-kpi span { color: var(--lk-muted); font-size: 13px; font-weight: 500; }
+    .tk-kpi.warn b { color: #b34812; }
+    .tk-kpi.warn::after { content: ""; position: absolute; right: 14px; top: 16px; width: 9px; height: 9px; border-radius: 50%; background: var(--lk-red); box-shadow: 0 0 0 0 rgba(224,72,72,.5); animation: lk-ping 1.8s infinite; }
+    @media (max-width: 1199px) { .tk-kpis { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 575px) { .tk-kpis { grid-template-columns: repeat(2, 1fr); gap: 10px; } .tk-kpi b { font-size: 24px; } }
+
+    .tk-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start; }
+    @media (max-width: 1199px) { .tk-grid { grid-template-columns: 1fr; } }
+    .tk-panel { background: #fff; border: 1px solid var(--lk-line); border-radius: 20px; overflow: hidden; }
+    .tk-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--lk-line); flex-wrap: wrap; }
+    .tk-panel-head h2 { font-size: 17px; margin: 0; display: flex; align-items: center; gap: 10px; }
+    .tk-panel-head h2 .fa { color: var(--lk-teal); }
+    .tk-panel-head a { font-size: 13px; font-weight: 600; }
+    .tk-side { display: grid; gap: 20px; }
+
+    .tk-filters { display: flex; gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--lk-line); flex-wrap: wrap; align-items: center; background: #fbfdfe; }
+    .tk-seg { display: inline-flex; background: var(--lk-bg); border-radius: 12px; padding: 4px; border: 1px solid var(--lk-line); }
+    .tk-seg button { border: 0; background: none; padding: 7px 14px; border-radius: 9px; font: 600 13.5px var(--lk-font); color: var(--lk-muted); cursor: pointer; }
+    .tk-seg button.is-active { background: #fff; color: var(--lk-navy); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .tk-filters select, .tk-filters input { border: 1.5px solid var(--lk-line-2); border-radius: 12px; padding: 8px 12px; font: 14px var(--lk-font); background: #fff; color: var(--lk-ink); }
+    .tk-filters input { flex: 1; min-width: 180px; }
+    .tk-filters input:focus, .tk-filters select:focus { outline: none; border-color: var(--lk-teal); }
+    .tk-filter-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--lk-teal-50); color: var(--lk-teal-600); border-radius: 999px; padding: 5px 10px; font-size: 13px; font-weight: 600; }
+    .tk-filter-tag button { border: 0; background: none; color: inherit; padding: 0; cursor: pointer; }
+
+    .tk-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .tk-table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .6px; color: var(--lk-muted); font-weight: 600; padding: 12px 16px; background: #fbfdfe; border-bottom: 1px solid var(--lk-line); }
+    .tk-table td { padding: 14px 16px; border-bottom: 1px solid var(--lk-line); vertical-align: middle; }
+    .tk-table tbody tr { cursor: pointer; transition: background .12s; }
+    .tk-table tbody tr:hover { background: #f5fafc; }
+    .tk-table tbody tr.flash { animation: tk-flash 1.6s ease; }
+    @keyframes tk-flash { 0% { background: #fff4d6; } 100% { background: transparent; } }
+    .tk-no { font-weight: 700; color: var(--lk-navy); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; }
+    .tk-sub { color: var(--lk-muted); font-size: 12.5px; }
+    .tk-route { display: flex; align-items: center; gap: 8px; }
+    .tk-mode { width: 30px; height: 30px; border-radius: 9px; background: var(--lk-teal-50); color: var(--lk-teal-600); display: grid; place-items: center; flex: none; }
+    .tk-eta.late { color: var(--lk-red); font-weight: 600; }
+    .tk-eta.soon { color: #b34812; font-weight: 600; }
+    .tk-badge-warn { display: inline-flex; gap: 5px; align-items: center; font-size: 11.5px; font-weight: 700; color: #b42828; background: #fde6e6; border-radius: 6px; padding: 2px 7px; margin-top: 4px; }
+    @media (max-width: 767px) {
+      .tk-table thead { display: none; }
+      .tk-table, .tk-table tbody, .tk-table tr, .tk-table td { display: block; width: 100%; }
+      .tk-table tr { padding: 14px 16px; border-bottom: 1px solid var(--lk-line); display: grid !important; grid-template-columns: 1fr auto; gap: 8px; }
+      .tk-table td { padding: 0; border: 0; }
+      .tk-table td.c-status { grid-column: 1 / -1; }
+      .tk-table td.c-route { grid-column: 1 / -1; }
+      .tk-table td.c-upd { display: none; }
+      .tk-table td.c-eta { text-align: right; }
+    }
+
+    #map { height: 320px; background: #dfe9ef; }
+    .leaflet-container { font-family: var(--lk-font); }
+    .tk-map-legend { display: flex; gap: 14px; flex-wrap: wrap; padding: 10px 16px; font-size: 12.5px; color: var(--lk-muted); border-top: 1px solid var(--lk-line); }
+    .tk-map-legend i.sw { display: inline-block; width: 18px; height: 3px; border-radius: 2px; vertical-align: middle; margin-right: 6px; }
+    .tk-pin { background: var(--lk-navy); color: #fff; border: 2px solid #fff; border-radius: 999px; font: 700 12px/1 var(--lk-font); display: grid !important; place-items: center; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+    .tk-pin.ocean { background: var(--lk-teal); }
+    .tk-pin.port { background: #b97a00; }
+    .tk-pin.road { background: #4b3cc0; }
+    .tk-pin.border { background: #c4561a; }
+    .tk-pin.home { background: var(--lk-green); }
+
+    .tk-news-acts { display: inline-flex; gap: 6px; }
+    #newsRefresh[disabled] .fa { animation: lk-spin .8s linear infinite; }
+    .tk-news-status { padding: 8px 18px; font-size: 12.5px; color: var(--lk-muted); background: #fbfdfe; border-bottom: 1px solid var(--lk-line); }
+    .tk-list li.is-new { background: #f2fbf6; }
+    .tk-new { font-size: 10px; font-weight: 700; color: #0f7a4b; background: #e1f5ea; border-radius: 4px; padding: 1px 6px; }
+    .tk-list { list-style: none; margin: 0; padding: 0; }
+    .tk-list li { padding: 12px 18px; border-bottom: 1px solid var(--lk-line); }
+    .tk-list li:last-child { border-bottom: 0; }
+    .tk-list a.title { color: var(--lk-ink); font-weight: 600; font-size: 14px; text-decoration: none; display: block; line-height: 1.4; }
+    .tk-list a.title:hover { color: var(--lk-teal-600); }
+    .tk-list .meta { font-size: 12px; color: var(--lk-muted); margin-top: 3px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+    .tk-list .lk-cat { font-size: 10px; padding: 2px 7px; }
+    .tk-quote b { font-size: 14px; }
+    .tk-quote .acts { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+
+    /* drawer */
+    .tk-drawer-head { background: linear-gradient(135deg, var(--lk-navy-900), var(--lk-navy-700)); color: #fff; padding: 22px 24px; position: relative; }
+    .tk-drawer-head h3 { margin: 4px 0 6px; font-size: 22px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .tk-drawer-head .sub { color: #a9c3d4; font-size: 14px; }
+    .tk-drawer-head .acts { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+    .tk-drawer-body { padding: 20px 24px 40px; display: grid; gap: 18px; }
+    .tk-card { background: #fff; border: 1px solid var(--lk-line); border-radius: 16px; padding: 18px; }
+    .tk-card h4 { font-size: 15px; margin: 0 0 14px; display: flex; gap: 8px; align-items: center; }
+    .tk-card h4 .fa { color: var(--lk-teal); }
+    .tk-check { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--lk-ink-2); cursor: pointer; }
+    .tk-check input { width: 18px; height: 18px; accent-color: var(--lk-teal); }
+    .tk-status-pick { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tk-status-pick label { margin: 0; cursor: pointer; }
+    .tk-status-pick input { position: absolute; opacity: 0; pointer-events: none; }
+    .tk-status-pick .lk-chip { border: 2px solid transparent; padding: 5px 10px; transition: .12s; }
+    .tk-status-pick input:checked + .lk-chip { border-color: currentColor; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .tk-status-pick input:focus-visible + .lk-chip { outline: 3px solid var(--lk-teal-300); }
+
+    .tk-kbd { font: 600 11px var(--lk-font); border: 1px solid var(--lk-line-2); border-bottom-width: 2px; border-radius: 5px; padding: 1px 5px; color: var(--lk-muted); background: #fff; }
+  </style>
+</head>
+
+<body class="lk-body">
+  <div class="lk-demo-banner"><i class="fa fa-flask"></i> Demo dashboard with sample shipments. Changes aren't saved. Connect the backend in <code>js/logistics-config.js</code> to go live.</div>
+
+  <header class="lk-header">
+    <div class="lk-container">
+      <a class="lk-brand" href="logistics.html">
+        <img src="images/laiken_logistics_logo.png" alt="Laiken Logistics logo" />
+        <span><b>Laiken Logistics</b><small>Port to doorstep</small></span>
+      </a>
+      <button class="lk-menu-toggle" aria-label="Open menu" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      <nav class="lk-nav" aria-label="Main">
+        <a href="logistics.html">Home</a>
+        <a href="logistics.html#services">Services</a>
+        <a href="logistics.html#track">Track</a>
+        <a href="logistics-news.html">News</a>
+        <a href="logistics-tracker.html" class="is-active" aria-current="page"><i class="fa fa-lock"></i> Staff</a>
+        <a class="lk-btn lk-btn-primary lk-btn-sm" href="logistics.html#quote">Get a quote</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===================== Login ===================== -->
+  <section class="tk-login" id="loginView" hidden>
+    <div class="tk-login-card">
+      <div class="logo">
+        <img src="images/laiken_logistics_logo.png" alt="" />
+        <div><h1>Staff sign in</h1><small style="color:var(--lk-muted)">Laiken Logistics shipment dashboard</small></div>
+      </div>
+
+      <div id="loginDemo" hidden>
+        <p class="sub">The backend isn't connected yet, so you can explore the dashboard with sample shipments.</p>
+        <button class="lk-btn lk-btn-teal lk-btn-block" id="enterDemo"><i class="fa fa-play"></i> Open demo dashboard</button>
+      </div>
+
+      <form class="lk-form" id="otpForm" hidden>
+        <p class="sub" id="otpSub">We'll email you a one-time sign-in code. Use your @laikenug.com address.</p>
+        <div class="lk-field" id="emailField"><label for="loginEmail">Work email</label><input id="loginEmail" type="email" autocomplete="email" required placeholder="you@laikenug.com" /></div>
+        <div class="lk-field" id="codeField" hidden><label for="loginCode">6-digit code</label><input id="loginCode" class="tk-otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" /></div>
+        <div class="lk-alert" id="loginAlert" role="alert"></div>
+        <button class="lk-btn lk-btn-teal lk-btn-block" type="submit" id="otpBtn"><i class="fa fa-envelope"></i> Email me a code</button>
+        <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <button type="button" class="tk-switch" id="otpBack" hidden><i class="fa fa-arrow-left"></i> Use a different email</button>
+          <button type="button" class="tk-switch" id="toPassword">Sign in with a password instead</button>
+        </div>
+      </form>
+
+      <form class="lk-form" id="pwForm" hidden>
+        <p class="sub">Sign in with your email and password.</p>
+        <div class="lk-field"><label for="pwEmail">Work email</label><input id="pwEmail" type="email" autocomplete="email" required /></div>
+        <div class="lk-field"><label for="pwPass">Password</label><input id="pwPass" type="password" autocomplete="current-password" required /></div>
+        <div class="lk-alert" id="pwAlert" role="alert"></div>
+        <button class="lk-btn lk-btn-teal lk-btn-block" type="submit"><i class="fa fa-sign-in"></i> Sign in</button>
+        <button type="button" class="tk-switch" id="toOtp">Email me a code instead</button>
+      </form>
+
+      <div id="noAccess" hidden>
+        <div class="lk-alert err show" id="noAccessMsg"></div>
+        <p class="sub" style="margin-top:14px">An admin can add you with <code>npm run staff:add</code> in the backend folder.</p>
+        <button class="lk-btn lk-btn-light lk-btn-block" id="noAccessOut"><i class="fa fa-sign-out"></i> Sign out</button>
+      </div>
+
+      <p style="text-align:center;margin:22px 0 0;font-size:13.5px"><a href="logistics.html"><i class="fa fa-arrow-left"></i> Back to website</a></p>
+    </div>
+  </section>
+
+  <!-- ===================== Loading ===================== -->
+  <div id="bootView" style="min-height:calc(100vh - var(--lk-header-h));display:grid;place-items:center"><span class="lk-spinner"></span></div>
+
+  <!-- ===================== App ===================== -->
+  <div id="appView" hidden>
+
+    <main class="tk-main">
+      <div class="tk-hello">
+        <div>
+          <h1 id="greeting">Hello</h1>
+          <p id="today"></p>
+        </div>
+        <div class="tk-actions">
+          <span class="tk-sub tk-hide-xs" id="lastSync">—</span>
+          <button class="lk-btn lk-btn-primary lk-btn-sm" id="newBtn"><i class="fa fa-plus"></i> New shipment</button>
+          <button class="tk-icon-btn" id="refreshBtn" title="Refresh"><i class="fa fa-refresh"></i></button>
+          <div class="tk-user"><div class="tk-avatar" id="avatar">?</div><span><b id="userName">—</b><small id="userRole">—</small></span></div>
+          <button class="tk-icon-btn" id="signOutBtn" title="Sign out"><i class="fa fa-sign-out"></i></button>
+        </div>
+      </div>
+
+      <div class="tk-kpis" id="kpis"></div>
+
+      <div class="tk-grid">
+        <section class="tk-panel">
+          <div class="tk-panel-head">
+            <h2><i class="fa fa-cubes"></i> Shipments <span class="tk-sub" id="count"></span></h2>
+            <div class="tk-seg" id="viewSeg">
+              <button data-view="active" class="is-active">Active</button>
+              <button data-view="delivered">Delivered</button>
+              <button data-view="all">All</button>
+            </div>
+          </div>
+          <div class="tk-filters">
+            <input id="q" type="search" placeholder="Search tracking no., client, container, B/L, AWB, cargo…" aria-label="Search shipments" />
+            <select id="modeFilter" aria-label="Mode">
+              <option value="">All modes</option><option value="sea">Sea</option><option value="air">Air</option><option value="road">Road</option><option value="rail">Rail</option>
+            </select>
+            <select id="statusFilter" aria-label="Status"><option value="">Any status</option></select>
+            <span id="activeFilter"></span>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tk-table">
+              <thead><tr><th>Shipment</th><th>Route</th><th>Status</th><th>ETA</th><th>Updated</th></tr></thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="tk-side">
+          <section class="tk-panel">
+            <div class="tk-panel-head"><h2><i class="fa fa-map-o"></i> Corridor map</h2><span class="tk-sub" id="mapNote"></span></div>
+            <div id="map"></div>
+            <div class="tk-map-legend">
+              <span><i class="sw" style="background:#0a97b0"></i>Northern corridor</span>
+              <span><i class="sw" style="background:#ffb020"></i>Central corridor</span>
+            </div>
+          </section>
+
+          <section class="tk-panel">
+            <div class="tk-panel-head"><h2><i class="fa fa-inbox"></i> Quote requests</h2><span class="tk-sub" id="quoteCount"></span></div>
+            <ul class="tk-list" id="quotes"></ul>
+          </section>
+
+          <section class="tk-panel">
+            <div class="tk-panel-head">
+              <h2><i class="fa fa-newspaper-o"></i> URA &amp; logistics news</h2>
+              <span class="tk-news-acts">
+                <button class="lk-btn lk-btn-light lk-btn-sm" id="newsRefresh" title="Fetch the latest stories now"><i class="fa fa-refresh"></i> <span>Refresh</span></button>
+                <a class="lk-btn lk-btn-light lk-btn-sm" href="logistics-news.html" target="_blank" title="Open the news hub">View all</a>
+              </span>
+            </div>
+            <div class="tk-news-status" id="newsStatus">Loading…</div>
+            <ul class="tk-list" id="news"></ul>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===================== Shipment drawer ===================== -->
+  <div class="lk-overlay lk-drawer-overlay" id="drawer" role="dialog" aria-modal="true" aria-label="Shipment details">
+    <div class="lk-drawer" id="drawerInner"></div>
+  </div>
+
+  <!-- ===================== New shipment modal ===================== -->
+  <div class="lk-overlay" id="newModal" role="dialog" aria-modal="true" aria-labelledby="newTitle">
+    <div class="lk-modal">
+      <div class="lk-modal-head">
+        <button class="lk-close" data-close aria-label="Close"><i class="fa fa-times"></i></button>
+        <div class="sub">A tracking number is created automatically</div>
+        <h3 id="newTitle">New shipment</h3>
+      </div>
+      <div class="lk-modal-body">
+        <form class="lk-form" id="newForm"></form>
+      </div>
+    </div>
+  </div>
+
+  <div class="lk-toast" id="toast" role="status"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="js/logistics-config.js"></script>
+  <script src="js/logistics-common.js"></script>
+  <script type="module" src="js/logistics-tracker.js"></script>
+</body>
+
+</html>
